@@ -1,0 +1,267 @@
+#+TITLE: Notion unofficial python API usage
+#+PROPERTY: header-args:sh :session *shell python-notion-py-usage sh* :results silent raw
+#+PROPERTY: header-args:python :session *shell python-notion-py-usage python* :results silent raw
+#+OPTIONS: ^:nil
+
+** Install notion-py
+
+#+BEGIN_SRC sh
+pip install notion
+#+END_SRC
+
+** Imports
+
+#+BEGIN_SRC python
+import datetime
+
+from notion.client import NotionClient
+#+END_SRC
+
+** Parameters
+*** Token
+
+#+BEGIN_SRC python
+TOKEN = "<copy from cookies: token_v2>"
+#+END_SRC
+
+*** Space ID
+
+#+BEGIN_SRC python
+SPACE_ID = "<copy space id from url>"
+#+END_SRC
+
+** Print dict keys
+
+#+BEGIN_SRC python
+def dict_keys(d):
+    return "\n".join([x for x in dir(d) if not x.startswith("_")])
+#+END_SRC
+
+** Client
+
+#+BEGIN_SRC python :results replace code :exports both
+client = NotionClient(token_v2=TOKEN)
+dict_keys(client)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+as_atomic_transaction
+create_record
+current_space
+current_user
+get_block
+get_collection
+get_collection_view
+get_record_data
+get_space
+get_top_level_pages
+get_user
+in_transaction
+post
+query_collection
+refresh_collection_rows
+refresh_records
+search_blocks
+search_pages_with_parent
+session
+start_monitoring
+submit_transaction
+#+END_SRC
+
+** Current user
+
+#+BEGIN_SRC python :results replace code :exports both
+dict_keys(client.current_user)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+add_callback
+child_list_key
+email
+family_name
+full_name
+get
+given_name
+id
+locale
+refresh
+remove_callbacks
+role
+set
+time_zone
+#+END_SRC
+
+#+BEGIN_SRC python
+client.current_user
+#+END_SRC
+
+** Current space
+
+#+BEGIN_SRC python :results replace code :exports both
+dict_keys(client.current_space)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+add_callback
+add_page
+child_list_key
+domain
+get
+icon
+id
+name
+pages
+refresh
+remove_callbacks
+role
+set
+users
+#+END_SRC
+
+#+BEGIN_SRC python
+client.current_space
+#+END_SRC
+
+** Get top level pages of a current space
+
+#+BEGIN_SRC python
+client.get_top_level_pages()
+#+END_SRC
+
+** Get space
+
+#+BEGIN_SRC python :results replace code :exports both
+space = client.get_space(SPACE_ID)
+dict_keys(space)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+add_callback
+add_page
+child_list_key
+domain
+get
+icon
+id
+name
+pages
+refresh
+remove_callbacks
+role
+set
+users
+#+END_SRC
+
+** List pages of an other space
+
+#+BEGIN_SRC python
+space.pages
+#+END_SRC
+
+** Block
+
+#+BEGIN_SRC python
+block_id = space.pages[3]
+#+END_SRC
+
+#+BEGIN_SRC python
+block = client.get_block(block_id)
+block
+#+END_SRC
+
+#+BEGIN_SRC python :results replace code :exports both
+dict_keys(block)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+add_callback
+alive
+caption
+child_list_key
+children
+collection
+description
+get
+get_browseable_url
+icon
+id
+is_alias
+move_to
+parent
+refresh
+remove
+remove_callbacks
+role
+set
+space_info
+title
+type
+views
+#+END_SRC
+
+** Collection
+
+#+BEGIN_SRC python
+collection = block.collection
+#+END_SRC
+
+#+BEGIN_SRC python
+collection = client.get_collection("<collection id>")
+#+END_SRC
+
+#+BEGIN_SRC python :results replace code :exports both
+dict_keys(collection)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC python
+add_callback
+add_row
+child_list_key
+cover
+description
+get
+get_rows
+get_schema_properties
+get_schema_property
+id
+name
+parent
+query
+refresh
+remove_callbacks
+role
+set
+templates
+#+END_SRC
+
+#+BEGIN_SRC python
+collection.get_rows()
+#+END_SRC
+
+** Add row to collection
+
+You need to create properties before use this snippet.
+
+#+BEGIN_SRC python
+row = collection.add_row()
+row.set_property("Name", "API Created")
+row.set_property("TestDate", datetime.datetime(2020, 8, 10, 12, 11, 32, 802000))
+row.set_property("Tags", "Work")
+row.set_property("Тестовое поле", "Создано через API")
+#+END_SRC
+
+** Set icon
+
+#+BEGIN_SRC python
+icon = b'\xe2\x9c\x85'.decode("utf8")
+#+END_SRC
+
+#+BEGIN_SRC python
+row.icon = icon
+#+END_SRC
